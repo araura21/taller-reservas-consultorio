@@ -120,9 +120,11 @@ out
 .nuxt
 dist
 
-# Gatsby files
-.cache/
-public
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
 # Vuepress build output
 .vuepress/dist
