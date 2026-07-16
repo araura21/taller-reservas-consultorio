@@ -64,4 +64,14 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Credenciales inválidas"));
     }
+
+        @Test
+        void validateToken_debeRetornarTrueCuandoTokenEsValido() throws Exception {
+                when(authService.validarToken("token-valido")).thenReturn(true);
+
+                mockMvc.perform(post("/api/auth/validate")
+                                                .header("Authorization", "Bearer token-valido"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").value(true));
+        }
 }

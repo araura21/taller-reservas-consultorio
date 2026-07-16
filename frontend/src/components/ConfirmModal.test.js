@@ -22,4 +22,24 @@ describe('ConfirmModal', () => {
 
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
+
+  test('ejecuta onClose al hacer clic en cancelar', () => {
+    const onConfirm = jest.fn();
+    const onClose = jest.fn();
+
+    render(
+      <ConfirmModal
+        isOpen={true}
+        onClose={onClose}
+        onConfirm={onConfirm}
+        title="Confirmar accion"
+        message="Desea continuar?"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
 });

@@ -12,6 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,5 +48,28 @@ class ServicioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombreServicio").value("Consulta General"))
                 .andExpect(jsonPath("$[0].precio").value(25));
+    }
+
+    @Test
+    void obtenerServicios_debeRetornarTodosCuandoSoloActivosEsFalse() throws Exception {
+        ServicioResponse servicioInactivo = new ServicioResponse(
+                2L,
+                "Consulta Especializada",
+                50,
+                "Servicio inactivo para prueba",
+                45,
+                false,
+                LocalDateTime.now()
+        );
+
+        when(servicioService.obtenerTodosLosServicios()).thenReturn(List.of(servicioInactivo));
+
+        mockMvc.perform(get("/api/servicios").param("soloActivos", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombreServicio").value("Consulta Especializada"))
+                .andExpect(jsonPath("$[0].activo").value(false));
+
+        verify(servicioService).obtenerTodosLosServicios();
+        verify(servicioService, never()).obtenerServiciosActivos();
     }
 }
