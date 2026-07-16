@@ -74,4 +74,26 @@ class AuthControllerTest {
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$").value(true));
         }
+
+    @Test
+    void logout_debeRetornar200YInvalidarToken() throws Exception {
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer admin-token-123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Sesión cerrada exitosamente"));
+    }
+
+    @Test
+    void login_debeRetornarErrorCuandoEmailNoExiste() throws Exception {
+        LoginRequest request = new LoginRequest("noexiste@reservas.com", "password");
+
+        when(authService.login(any(LoginRequest.class)))
+                .thenThrow(new RuntimeException("Usuario no encontrado"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Usuario no encontrado"));
+    }
 }
